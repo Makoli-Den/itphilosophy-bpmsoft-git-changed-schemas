@@ -1,0 +1,1 @@
+# itphilosophy-bpmsoft-git-changed-schemas
