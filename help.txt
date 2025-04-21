@@ -1,0 +1,2 @@
+If you encounter problems with .ps1 in Windows - in PowerShell with admin rights type:
+	Set-ExecutionPolicy -Scope CurrentUser -ExecutionPolicy RemoteSigned

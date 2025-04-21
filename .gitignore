@@ -1,0 +1,42 @@
+# Node.js
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# VS Code
+.vscode/
+*.code-workspace
+
+# Build output
+dist/
+out/
+*.js
+*.js.map
+
+# TypeScript
+*.tsbuildinfo
+
+# MacOS
+.DS_Store
+
+# Env files
+.env
+.env.local
+.env.*.local
+
+# Logs
+logs/
+*.log
+
+# Coverage reports
+coverage/
+*.lcov
+
+# Optional: если используешь webpack
+webpack-stats.json
+
+# Package lock (если используешь yarn и не хочешь смешивать с npm)
+package-lock.json
+# или наоборот, если используешь npm
+yarn.lock
