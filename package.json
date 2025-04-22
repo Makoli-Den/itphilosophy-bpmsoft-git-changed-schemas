@@ -13,12 +13,28 @@
 	"main": "./dist/extension.js",
 	"l10n": "./l10n",
 	"contributes": {
+		"commands": [
+			{
+				"command": "extension.openFileDiff",
+				"title": "Open Diff",
+				"when": "false"
+			}
+		],
 		"views": {
 			"scm": [
 				{
 					"id": "bpmsoftGitChangedSchemas",
 					"name": "%extension.bpmsoftGitChangedSchemas%",
 					"icon": "media/changed-schemas.svg"
+				}
+			]
+		},
+		"menus": {
+			"view/item/context": [
+				{
+					"when": "view == bpmsoftGitChangedSchemas && viewItem == file-with-diff",
+					"command": "extension.openFileDiff",
+					"group": "inline"
 				}
 			]
 		}
@@ -53,6 +69,7 @@
 		"@vscode/l10n": "^0.0.10"
 	},
 	"extensionDependencies": [
+		"eamodio.gitlens",
 		"vscode.git"
 	]
 }

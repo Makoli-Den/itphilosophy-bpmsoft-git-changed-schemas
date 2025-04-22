@@ -4,13 +4,13 @@ import { RepositoryItem } from '../Nodes/RepositoryItem';
 import { EmptyTreeItem } from '../Nodes/EmptyTreeItem';
 
 export class BpmsoftGitChangedSchemasProvider implements vscode.TreeDataProvider<vscode.TreeItem> {
-	private gitExtension = vscode.extensions.getExtension<git.GitExtension>('vscode.git');
+	private gitExtension: vscode.Extension<git.GitExtension> | undefined;
 	private repositories: git.Repository[] = [];
-	private _onDidChangeTreeData = new vscode.EventEmitter<vscode.TreeItem | undefined>();
-
-	readonly onDidChangeTreeData = this._onDidChangeTreeData.event;
+	private _onDidChangeTreeData: vscode.EventEmitter<vscode.TreeItem | undefined> = new vscode.EventEmitter<vscode.TreeItem | undefined>();
+	readonly onDidChangeTreeData: vscode.Event<vscode.TreeItem | undefined> = this._onDidChangeTreeData.event;
 
 	constructor() {
+		this.gitExtension = vscode.extensions.getExtension<git.GitExtension>('vscode.git');
 		this.initialize();
 	}
 
@@ -25,10 +25,14 @@ export class BpmsoftGitChangedSchemasProvider implements vscode.TreeDataProvider
 		this.updateRepositories(gitApi.repositories);
 	}
 
+	private addRepository(repo: git.Repository) {
+		repo.state.onDidChange(() => this._onDidChangeTreeData.fire(undefined));
+	}
+
 	private updateRepositories(repositories: git.Repository[]) {
 		this.repositories = repositories;
 		for (const repo of repositories) {
-			repo.state.onDidChange(() => this._onDidChangeTreeData.fire(undefined));
+			this.addRepository(repo);
 		}
 		this._onDidChangeTreeData.fire(undefined);
 	}
@@ -38,15 +42,18 @@ export class BpmsoftGitChangedSchemasProvider implements vscode.TreeDataProvider
 	}
 
 	getChildren(element?: vscode.TreeItem): vscode.ProviderResult<vscode.TreeItem[]> {
+		if (!this.gitExtension) return [];
+		const gitApi = this.gitExtension.exports.getAPI(1);
+		if (!gitApi) return [];
+
 		if (!element) {
-			if (this.repositories.length === 0) {
-				return [new EmptyTreeItem('No repositories found')];
-			}
-			return this.repositories.map(repo => new RepositoryItem(repo));
+			return this.repositories.length
+				? this.repositories.map(repo => new RepositoryItem(repo))
+				: [new EmptyTreeItem('No Git repositories found')];
 		}
 
-		if (element instanceof RepositoryItem) {
-			return element.getChildren();
+		if (element instanceof RepositoryItem || 'getChildren' in element) {
+			return (element as any).getChildren();
 		}
 
 		return [];
